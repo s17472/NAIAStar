@@ -5,9 +5,9 @@ namespace NAI_AStar
 {
     public enum NodeType
     {
-        Street = 10,
-        Grass = 15,
-        Wall = 0
+        Street = 0,
+        Grass = 5,
+        Wall = int.MaxValue, 
     }
 
     public static class NodeTypeExtensions
@@ -46,27 +46,30 @@ namespace NAI_AStar
         public double G { get; private set; }
         public double H { get; set; }
         public double F => G + H;
-        public Point Location { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
 
-        public Node(Node? parentNode, NodeType type, double g, double h, Point location)
+        public Node(Node? parentNode, NodeType type, double g, double h, int x, int y)
         {
             _parentNode = parentNode;
             Type = type;
             G = g;
             H = h;
-            Location = location;
+            X = x;
+            Y = y;
         }
 
-        public Node(NodeType type) : this(null, type, 0,0,new Point())
+        public Node(NodeType type) : this(null, type, 0, 0, 0, 0)
         {
             Type = type;
         }
 
         public static double GetTravelCost(Node startNode, Node endNode)
         {
-            var deltaX = endNode.Location.X - startNode.Location.X;
-            var deltaY = endNode.Location.Y - startNode.Location.Y;
-            return Math.Sqrt(deltaX * deltaX + deltaY * deltaY) * ((double)startNode.Type / 10);
+            var D = 1;
+            var dx = Math.Abs(startNode.X - endNode.X);
+            var dy = Math.Abs(startNode.Y - endNode.Y);
+            return D * (dx + dy);
         }
     }
 }

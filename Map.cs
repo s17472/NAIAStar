@@ -24,19 +24,19 @@ namespace NAI_AStar
                 {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Street) , new Node(NodeType.Street) }
             };
 
-            if (start.X >= Width || start.X < 0 || start.Y >= Height || start.Y < 0)
+            if (!InBounds(start))
             {
                 throw new Exception($"Starting point ({start.X}, {start.Y}) was outside the bounds of the map.");
             }
-            if (end.X >= Width || end.X < 0 || end.Y >= Height || end.Y < 0)
+            if (!InBounds(end))
             {
                 throw new Exception($"Ending point ({end.X}, {end.Y}) was outside the bounds of the map.");
             }
-            if (_map[start.Y, start.X].Type <= 0)
+            if (!IsPassable(start))
             {
                 throw new Exception($"Starting point ({start.X}, {start.Y}) can't be set on impassable node ({_map[start.X, start.Y].Type.ToString()}).");
             }
-            if (_map[end.Y, end.X].Type <= 0)
+            if (!IsPassable(end))
             {
                 throw new Exception($"Ending point ({end.X}, {end.Y}) can't be impassable node ({_map[end.Y, end.X].Type.ToString()}).");
             }
@@ -44,6 +44,7 @@ namespace NAI_AStar
             Start = start;
             End = end;
         }
+
 
         public Map() : this(new Point(), new Point())
         {
@@ -87,6 +88,11 @@ namespace NAI_AStar
             return sb.ToString();
         }
 
+        private bool InBounds(Point point)
+        {
+            return point.X < Width && point.X >= 0 && point.Y < Height && point.Y >= 0;
+        }
+
         private bool IsStart(int x, int y)
         {
             return Start.X == x && Start.Y == y;
@@ -95,6 +101,10 @@ namespace NAI_AStar
         private bool IsEnd(int x, int y)
         {
             return End.X == x && End.Y == y;
+        }
+        private bool IsPassable(Point point)
+        {
+            return _map[point.Y, point.X].Type <= 0;
         }
     }
 }
