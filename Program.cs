@@ -11,7 +11,7 @@ namespace NAI_AStar
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            var map = new Map();
+            var map = new Map(new Point(0,0), new Point(3,3) );
             Console.WriteLine(map.ToString());
             Console.ReadKey();
         }

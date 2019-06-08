@@ -30,7 +30,7 @@ namespace NAI_AStar
 
     public class Node
     {
-        private Node _parentNode;
+        private Node? _parentNode;
 
         public Node Parent
         {
@@ -42,12 +42,25 @@ namespace NAI_AStar
             }
         }
 
-
         public NodeType Type { get; set; }
         public double G { get; private set; }
         public double H { get; set; }
         public double F => G + H;
         public Point Location { get; set; }
+
+        public Node(Node? parentNode, NodeType type, double g, double h, Point location)
+        {
+            _parentNode = parentNode;
+            Type = type;
+            G = g;
+            H = h;
+            Location = location;
+        }
+
+        public Node(NodeType type) : this(null, type, 0,0,new Point())
+        {
+            Type = type;
+        }
 
         public static double GetTravelCost(Node startNode, Node endNode)
         {
