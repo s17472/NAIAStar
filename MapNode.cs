@@ -4,14 +4,19 @@ namespace NAI_AStar
 {
     public struct MapNode
     {
-        public int X, Y;
+//        public int X, Y;
         public NodeType Type;
 
-        public MapNode(int x, int y, NodeType type)
+        public MapNode(NodeType type)
         {
-            X = x;
-            Y = y;
             Type = type;
         }
+
+//        public MapNode(int x, int y, NodeType type)
+//        {
+//            X = x;
+//            Y = y;
+//            Type = type;
+//        }
     }
 }
