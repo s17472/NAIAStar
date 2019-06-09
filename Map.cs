@@ -13,17 +13,18 @@ namespace NAI_AStar
         public int Height => _map.GetLength(0);
         public int Width => _map.GetLength(1);
         private readonly Node[,] _map;
+        public IEnumerable<Node> MapAsEnumerable() => _map.Cast<Node>().AsEnumerable();
 
         public Map(Point start, Point end)
         {
             _map = new[,]
             {
-                {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Grass) , new Node(NodeType.Street) },
-                {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Wall) , new Node(NodeType.Street) },
-                {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Wall) , new Node(NodeType.Street) },
-                {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Wall) , new Node(NodeType.Street) },
-                {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Wall) , new Node(NodeType.Street) },
-                {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Street) , new Node(NodeType.Street) }
+                {new Node(NodeType.Street, 0, 0), new Node(NodeType.Street, 1, 0),new Node(NodeType.Grass, 2, 0) , new Node(NodeType.Street, 3, 0) },
+                {new Node(NodeType.Street, 0, 1), new Node(NodeType.Street, 1, 1),new Node(NodeType.Wall, 2, 1) , new Node(NodeType.Street, 3, 1) },
+                {new Node(NodeType.Street, 0, 2), new Node(NodeType.Street, 1, 2),new Node(NodeType.Wall, 2, 2) , new Node(NodeType.Street, 3, 2) },
+                {new Node(NodeType.Street, 0, 3), new Node(NodeType.Street, 1, 3),new Node(NodeType.Wall, 2, 3) , new Node(NodeType.Street, 3, 3) },
+                {new Node(NodeType.Street, 0, 4), new Node(NodeType.Street, 1, 4),new Node(NodeType.Wall, 2, 4) , new Node(NodeType.Street, 3, 4) },
+                {new Node(NodeType.Street, 0, 5), new Node(NodeType.Street, 1, 5),new Node(NodeType.Street, 2, 5) , new Node(NodeType.Street, 3, 5) }
             };
 
             if (!InBounds(start))
@@ -111,8 +112,6 @@ namespace NAI_AStar
                     yield return neighborNode;
             }
         }
-
-
 
         public override string ToString()
         {

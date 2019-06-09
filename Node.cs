@@ -7,7 +7,7 @@ namespace NAI_AStar
     {
         Street = 0,
         Grass = 5,
-        Wall = int.MaxValue, 
+        Wall = int.MaxValue
     }
 
     public static class NodeTypeExtensions
@@ -50,8 +50,7 @@ namespace NAI_AStar
         public int Y { get; }
         public bool IsOpen { get; set; } = true;
         public bool IsPassable => Type != NodeType.Wall;
-
-
+        
         public Node(Node parentNode, NodeType type, int x, int y)
         {
             _parentNode = parentNode;
