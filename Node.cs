@@ -6,7 +6,7 @@ namespace NAI_AStar
     public enum NodeType
     {
         Street = 0,
-        Grass = 5,
+        Grass = 1,
         Wall = int.MaxValue
     }
 
@@ -44,19 +44,20 @@ namespace NAI_AStar
                 G = (int)Type;
 
                 if (_parent != null)
-                    G += GetTravelCost(this, _parent) + _parent.G;
+                    G += _parent.G;
             }
         }
 
         public NodeType Type { get; }
         public int G { get; private set; }
-        public int H { get; }
+        public int H { get; private set; }
         public int F => G + H;
         public int X { get; }
         public int Y { get; }
         public bool IsOpen { get; set; } = true;
         public bool IsPassable => (int)Type != (int)NodeType.Wall;
-        
+        public bool IsPath { get; set; }
+
         public Node(NodeType type, int x, int y)
         {
             Type = type;
@@ -67,26 +68,16 @@ namespace NAI_AStar
 
         public Node(NodeType type) : this(type, 0, 0) {}
 
-        public int SetHeuristic(Node endNode)
+        public void SetHeuristic(Node endNode)
         {
-            var D = 1;
             var dx = Math.Abs(X - endNode.X);
             var dy = Math.Abs(Y - endNode.Y);
-            return D * (dx + dy);
-        }
-
-
-        public static int GetTravelCost(Node startNode, Node endNode)
-        {
-            var D = 1;
-            var dx = Math.Abs(startNode.X - endNode.X);
-            var dy = Math.Abs(startNode.Y - endNode.Y);
-            return D * (dx + dy);
+            H = (dx + dy);
         }
 
         public override string ToString()
         {
-            return $"{X}, {Y}, G: {G}, H: {H}, {Type}, open: {IsOpen}, passable: {IsPassable}";
+            return $"{X}, {Y}, G: {G}, H: {H}, {Type}, open: {IsOpen}, passable: {IsPassable}, path: {IsPath}";
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices;
 
 namespace NAI_AStar
 {
@@ -10,29 +9,28 @@ namespace NAI_AStar
     {
         static void Main(string[] args)
         {
-            var _map = new[,]
-            {
-                {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Grass) , new Node(NodeType.Street) },
-                {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Wall) , new Node(NodeType.Street) },
-                {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Wall) , new Node(NodeType.Street) },
-                {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Wall) , new Node(NodeType.Street) },
-                {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Wall) , new Node(NodeType.Street) },
-                {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Street) , new Node(NodeType.Street) }
-            };
-            Console.WriteLine("Hello World!");
-            var map = new Map(new Point(0,0), new Point(3,3));
-
+            var map = new Map(new Point(1,1), new Point(3,2));
+            var pf = new PathFinder(map);
+            pf.Find();
             Console.WriteLine(map.ToString());
+
+
+            map = new Map(new Point(0, 0), new Point(3, 2));
+            pf = new PathFinder(map);
+            pf.Find();
+            Console.WriteLine(map.ToString());
+
+            map = new Map(new Point(0, 0), new Point(3, 3));
+            pf = new PathFinder(map);
+            pf.Find();
+            Console.WriteLine(map.ToString());
+
+            map = new Map(new Point(0, 0), new Point(3, 4));
+            pf = new PathFinder(map);
+            pf.Find();
+            Console.WriteLine(map.ToString());
+
             Console.ReadKey();
         }
-    }
-
-    public class PathFinder
-    {
-        public Map Map { get; set; }
-        private List<Node> _openList;
-        private List<Node> _closedList;
-
-
     }
 }

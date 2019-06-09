@@ -19,7 +19,7 @@ namespace NAI_AStar
         {
             _map = new[,]
             {
-                {new Node(NodeType.Street, 0, 0), new Node(NodeType.Street, 1, 0),new Node(NodeType.Grass, 2, 0) , new Node(NodeType.Street, 3, 0) },
+                {new Node(NodeType.Street, 0, 0), new Node(NodeType.Street, 1, 0),new Node(NodeType.Street, 2, 0) , new Node(NodeType.Street, 3, 0) },
                 {new Node(NodeType.Street, 0, 1), new Node(NodeType.Street, 1, 1),new Node(NodeType.Wall, 2, 1) , new Node(NodeType.Street, 3, 1) },
                 {new Node(NodeType.Street, 0, 2), new Node(NodeType.Street, 1, 2),new Node(NodeType.Wall, 2, 2) , new Node(NodeType.Street, 3, 2) },
                 {new Node(NodeType.Street, 0, 3), new Node(NodeType.Street, 1, 3),new Node(NodeType.Wall, 2, 3) , new Node(NodeType.Street, 3, 3) },
@@ -42,14 +42,19 @@ namespace NAI_AStar
             Start = start;
             GetNode(start).IsOpen = false;
             End = end;
+
+            foreach (var node in _map)
+            {
+                node.SetHeuristic(GetEndNode());
+            }
         }
 
-        private Node GetEndNode()
+        public Node GetEndNode()
         {
             return GetNode(End);
         }
 
-        private Node GetStartNode()
+        public Node GetStartNode()
         {
             return GetNode(Start);
         }
@@ -115,8 +120,10 @@ namespace NAI_AStar
             return GetNeighborPoints(node.X, node.Y);
         }
 
-        public IEnumerable<Node> GetPassableOpenNeighbors(Node node)
+        public List<Node> GetPassableOpenNeighbors(Node node)
         {
+            var list = new List<Node>();
+
             foreach (var neighborPoint in GetNeighborPoints(node))
             {
                 if (!InBounds(neighborPoint))
@@ -125,18 +132,12 @@ namespace NAI_AStar
                 var neighborNode = GetNode(neighborPoint);
 
                 if (neighborNode.IsPassable && neighborNode.IsOpen)
-                    yield return neighborNode;
+                    list.Add(neighborNode);
             }
+
+            return list;
         }
 
-        public void PrepareNeighborNodes(ref IEnumerable<Node> nodes, Node parentNode)
-        {
-            foreach (var node in nodes)
-            {
-                node.Parent = parentNode;
-                node.SetHeuristic(GetEndNode());
-            }
-        }
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -156,7 +157,14 @@ namespace NAI_AStar
                     }
                     else
                     {
-                        sb.Append(_map[i, j].Type.TypeToChar());
+                        if (GetNode(j, i).IsPath)
+                        {
+                            sb.Append('%');
+                        }
+                        else
+                        {
+                            sb.Append(_map[i, j].Type.TypeToChar());
+                        }
                     }
                 }
 
@@ -166,10 +174,10 @@ namespace NAI_AStar
 
             sb.Append('+');
             sb.Append('-', Width);
-            sb.AppendLine("+");
+            sb.Append("+");
 
-            sb.AppendLine($"Starting point: {Start.X}, {Start.Y}");
-            sb.AppendLine($"Ending point: {End.X}, {End.Y}");
+//            sb.AppendLine($"Starting point: {Start.X}, {Start.Y}");
+//            sb.AppendLine($"Ending point: {End.X}, {End.Y}");
 
             return sb.ToString();
         }
