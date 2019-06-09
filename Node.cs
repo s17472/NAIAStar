@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace NAI_AStar
+namespace NAIAStar
 {
     public enum NodeType
     {

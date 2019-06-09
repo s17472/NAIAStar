@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace NAI_AStar
+namespace NAIAStar
 {
     public class PathFinder
     {
