@@ -7,12 +7,12 @@ namespace NAI_AStar
     {
         public Map Map { get; set; }
 
-        public IEnumerable<Node> _nodes;
+        private IEnumerable<Node> _nodes;
 
         public PathFinder(Map map)
         {
             Map = map;
-            _nodes = map.GetMapAsEnumerable();
+            _nodes = map.GetMap();
         }
 
         public void Find()
@@ -49,9 +49,7 @@ namespace NAI_AStar
                     else
                     {
                         if (current.G + nextNode.H < nextNode.F)
-                        {
                             nextNode.Parent = current;
-                        }
                     }
                 }
             }

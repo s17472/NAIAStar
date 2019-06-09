@@ -6,7 +6,7 @@ namespace NAI_AStar
     public enum NodeType
     {
         Street = 0,
-        Grass = 1,
+        Grass = 4,
         Wall = int.MaxValue
     }
 
@@ -19,18 +19,33 @@ namespace NAI_AStar
                 case NodeType.Street:
                     return ' ';
                 case NodeType.Wall:
-                    return '░';
+                    return '#';
                 case NodeType.Grass:
                     return ',';
                 default:
                     return ' ';
             }
         }
+
+        public static NodeType CharToType(this char t)
+        {
+            switch (t)
+            {
+                case ' ':
+                    return NodeType.Street;
+                case '#':
+                    return NodeType.Wall;
+                case ',':
+                    return NodeType.Grass;
+                default:
+                    return NodeType.Street;
+            }
+        }
     }
 
     public class Node
     {
-        private Node? _parent;
+        private Node _parent;
 
         public Node Parent
         {
@@ -70,9 +85,10 @@ namespace NAI_AStar
 
         public void SetHeuristic(Node endNode)
         {
+            int m = 10;
             var dx = Math.Abs(X - endNode.X);
             var dy = Math.Abs(Y - endNode.Y);
-            H = (dx + dy);
+            H = m * (dx + dy);
         }
 
         public override string ToString()

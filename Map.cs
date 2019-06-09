@@ -8,24 +8,26 @@ namespace NAI_AStar
 {
     public class Map
     {
+        private IEnumerable<Node> _map;
         public Point Start { get; set; }
         public Point End { get; set; }
-        public int Height => _map.GetLength(0);
-        public int Width => _map.GetLength(1);
-        private readonly Node[,] _map;
-        public IEnumerable<Node> GetMapAsEnumerable() => _map.Cast<Node>().AsEnumerable();
+        public int Height => _map.Max(n => n.Y) + 1;
+        public int Width => _map.Max(n => n.X) + 1;
+        public IEnumerable<Node> GetMap() => _map.Cast<Node>().AsEnumerable();
 
-        public Map(Point start, Point end)
+        public Map(Point start, Point end, string[] mapArray)
         {
-            _map = new[,]
-            {
-                {new Node(NodeType.Street, 0, 0), new Node(NodeType.Street, 1, 0),new Node(NodeType.Street, 2, 0) , new Node(NodeType.Street, 3, 0) },
-                {new Node(NodeType.Street, 0, 1), new Node(NodeType.Street, 1, 1),new Node(NodeType.Wall, 2, 1) , new Node(NodeType.Street, 3, 1) },
-                {new Node(NodeType.Street, 0, 2), new Node(NodeType.Street, 1, 2),new Node(NodeType.Wall, 2, 2) , new Node(NodeType.Street, 3, 2) },
-                {new Node(NodeType.Street, 0, 3), new Node(NodeType.Street, 1, 3),new Node(NodeType.Wall, 2, 3) , new Node(NodeType.Street, 3, 3) },
-                {new Node(NodeType.Street, 0, 4), new Node(NodeType.Street, 1, 4),new Node(NodeType.Wall, 2, 4) , new Node(NodeType.Street, 3, 4) },
-                {new Node(NodeType.Street, 0, 5), new Node(NodeType.Street, 1, 5),new Node(NodeType.Street, 2, 5) , new Node(NodeType.Street, 3, 5) }
-            };
+
+            _map = ConvertToMap(mapArray);
+//            _map = new[,]
+//            {
+//                {new Node(NodeType.Street, 0, 0), new Node(NodeType.Street, 1, 0),new Node(NodeType.Street, 2, 0) , new Node(NodeType.Street, 3, 0) },
+//                {new Node(NodeType.Street, 0, 1), new Node(NodeType.Street, 1, 1),new Node(NodeType.Wall, 2, 1) , new Node(NodeType.Street, 3, 1) },
+//                {new Node(NodeType.Street, 0, 2), new Node(NodeType.Street, 1, 2),new Node(NodeType.Wall, 2, 2) , new Node(NodeType.Street, 3, 2) },
+//                {new Node(NodeType.Street, 0, 3), new Node(NodeType.Street, 1, 3),new Node(NodeType.Wall, 2, 3) , new Node(NodeType.Street, 3, 3) },
+//                {new Node(NodeType.Street, 0, 4), new Node(NodeType.Street, 1, 4),new Node(NodeType.Wall, 2, 4) , new Node(NodeType.Street, 3, 4) },
+//                {new Node(NodeType.Street, 0, 5), new Node(NodeType.Street, 1, 5),new Node(NodeType.Street, 2, 5) , new Node(NodeType.Street, 3, 5) }
+//            };
 
             if (!InBounds(start))
                 throw new Exception($"Starting point ({start.X}, {start.Y}) was outside the bounds of the map.");
@@ -34,10 +36,10 @@ namespace NAI_AStar
                 throw new Exception($"Ending point ({end.X}, {end.Y}) was outside the bounds of the map.");
 
             if (!IsPassable(start))
-                throw new Exception($"Starting point ({start.X}, {start.Y}) can't be set on impassable node ({_map[start.X, start.Y].Type.ToString()}).");
+                throw new Exception($"Starting point ({start.X}, {start.Y}) can't be set on impassable node ({GetNode(start.X, start.Y).Type.ToString()}).");
 
             if (!IsPassable(end))
-                throw new Exception($"Ending point ({end.X}, {end.Y}) can't be impassable node ({_map[end.Y, end.X].Type.ToString()}).");
+                throw new Exception($"Ending point ({end.X}, {end.Y}) can't be impassable node ({GetNode(end.Y, end.X).Type.ToString()}).");
             
             Start = start;
             GetNode(start).IsOpen = false;
@@ -86,12 +88,12 @@ namespace NAI_AStar
 
         private bool IsPassable(Point point)
         {
-            return _map[point.Y, point.X].IsPassable;
+            return GetNode(point.X, point.Y).IsPassable;
         }
 
         public Node GetNode(int x, int y)
         {
-            return _map[y, x];
+            return _map.Single(n => n.X == x && n.Y == y);
         }
 
         public Node GetNode(Point location)
@@ -138,6 +140,25 @@ namespace NAI_AStar
             return list;
         }
 
+        static IEnumerable<Node> ConvertToMap(string[] array)
+        {
+            var height = array.Length;
+            var width = array[0].Length;
+            var list = new List<Node>();
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    var type = array[y][x].CharToType();
+                    list.Add(new Node(type, x, y));
+                }
+            }
+
+            return list;
+        }
+
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -157,14 +178,7 @@ namespace NAI_AStar
                     }
                     else
                     {
-                        if (GetNode(j, i).IsPath)
-                        {
-                            sb.Append('%');
-                        }
-                        else
-                        {
-                            sb.Append(_map[i, j].Type.TypeToChar());
-                        }
+                        sb.Append(GetNode(j, i).IsPath ? '~' : GetNode(j, i).Type.TypeToChar());
                     }
                 }
 
@@ -175,9 +189,6 @@ namespace NAI_AStar
             sb.Append('+');
             sb.Append('-', Width);
             sb.Append("+");
-
-//            sb.AppendLine($"Starting point: {Start.X}, {Start.Y}");
-//            sb.AppendLine($"Ending point: {End.X}, {End.Y}");
 
             return sb.ToString();
         }
