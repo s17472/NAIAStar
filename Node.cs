@@ -41,7 +41,10 @@ namespace NAI_AStar
                     throw new Exception("Node not passable, cannot be child.");
 
                 _parent = value;
-                G = (int)Type + _parent.G;
+                G = (int)Type;
+
+                if (_parent != null)
+                    G += GetTravelCost(this, _parent) + _parent.G;
             }
         }
 
@@ -54,18 +57,15 @@ namespace NAI_AStar
         public bool IsOpen { get; set; } = true;
         public bool IsPassable => (int)Type != (int)NodeType.Wall;
         
-        public Node(Node parent, NodeType type, int x, int y)
+        public Node(NodeType type, int x, int y)
         {
             Type = type;
             G = (int)type;
             X = x;
             Y = y;
-            Parent = parent;
         }
 
-        public Node(NodeType type, int x, int y) : this(null, type, x, y) {}
-
-        public Node(NodeType type) : this(null, type, 0, 0) {}
+        public Node(NodeType type) : this(type, 0, 0) {}
 
         public int SetHeuristic(Node endNode)
         {
@@ -86,7 +86,7 @@ namespace NAI_AStar
 
         public override string ToString()
         {
-            return $"{X}, {Y}, {Type}, open: {IsOpen}, passable: {IsPassable}";
+            return $"{X}, {Y}, G: {G}, H: {H}, {Type}, open: {IsOpen}, passable: {IsPassable}";
         }
     }
 }

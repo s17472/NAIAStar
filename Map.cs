@@ -13,7 +13,7 @@ namespace NAI_AStar
         public int Height => _map.GetLength(0);
         public int Width => _map.GetLength(1);
         private readonly Node[,] _map;
-        public IEnumerable<Node> MapAsEnumerable() => _map.Cast<Node>().AsEnumerable();
+        public IEnumerable<Node> GetMapAsEnumerable() => _map.Cast<Node>().AsEnumerable();
 
         public Map(Point start, Point end)
         {
@@ -40,7 +40,18 @@ namespace NAI_AStar
                 throw new Exception($"Ending point ({end.X}, {end.Y}) can't be impassable node ({_map[end.Y, end.X].Type.ToString()}).");
             
             Start = start;
+            GetNode(start).IsOpen = false;
             End = end;
+        }
+
+        private Node GetEndNode()
+        {
+            return GetNode(End);
+        }
+
+        private Node GetStartNode()
+        {
+            return GetNode(Start);
         }
 
         private bool InBounds(int x, int y)
@@ -67,10 +78,12 @@ namespace NAI_AStar
         {
             return End.X == x && End.Y == y;
         }
+
         private bool IsPassable(Point point)
         {
-            return _map[point.Y, point.X].Type <= 0;
+            return _map[point.Y, point.X].IsPassable;
         }
+
         public Node GetNode(int x, int y)
         {
             return _map[y, x];
@@ -102,17 +115,28 @@ namespace NAI_AStar
             return GetNeighborPoints(node.X, node.Y);
         }
 
-        public IEnumerable<Node> GetPassableNeighbors(Node node)
+        public IEnumerable<Node> GetPassableOpenNeighbors(Node node)
         {
             foreach (var neighborPoint in GetNeighborPoints(node))
             {
+                if (!InBounds(neighborPoint))
+                    continue;
+
                 var neighborNode = GetNode(neighborPoint);
 
-                if (InBounds(neighborNode) && neighborNode.IsPassable)
+                if (neighborNode.IsPassable && neighborNode.IsOpen)
                     yield return neighborNode;
             }
         }
 
+        public void PrepareNeighborNodes(ref IEnumerable<Node> nodes, Node parentNode)
+        {
+            foreach (var node in nodes)
+            {
+                node.Parent = parentNode;
+                node.SetHeuristic(GetEndNode());
+            }
+        }
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
