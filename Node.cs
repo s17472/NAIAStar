@@ -6,7 +6,7 @@ namespace NAIAStar
     public enum NodeType
     {
         Street = 0,
-        Grass = 2,
+        Grass = 5,
         Wall = int.MaxValue
     }
 
