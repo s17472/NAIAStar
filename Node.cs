@@ -6,7 +6,7 @@ namespace NAIAStar
     public enum NodeType
     {
         Street = 0,
-        Grass = 4,
+        Grass = 2,
         Wall = int.MaxValue
     }
 
@@ -21,7 +21,7 @@ namespace NAIAStar
                 case NodeType.Wall:
                     return '#';
                 case NodeType.Grass:
-                    return ',';
+                    return ';';
                 default:
                     return ' ';
             }
@@ -35,7 +35,7 @@ namespace NAIAStar
                     return NodeType.Street;
                 case '#':
                     return NodeType.Wall;
-                case ',':
+                case ';':
                     return NodeType.Grass;
                 default:
                     return NodeType.Street;

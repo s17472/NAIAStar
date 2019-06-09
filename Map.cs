@@ -9,47 +9,45 @@ namespace NAIAStar
     public class Map
     {
         private IEnumerable<Node> _map;
-        public Point Start { get; set; }
-        public Point End { get; set; }
+        public Point Start { get; private set; }
+        public Point End { get; private set; }
         public int Height => _map.Max(n => n.Y) + 1;
         public int Width => _map.Max(n => n.X) + 1;
-        public IEnumerable<Node> GetMap() => _map.Cast<Node>().AsEnumerable();
+        public IEnumerable<Node> GetMap() => _map;
 
-        public Map(Point start, Point end, string[] mapArray)
+        public Map(string[] map)
         {
+            Start = new Point(int.MaxValue, int.MaxValue);
+            End = new Point(int.MaxValue, int.MaxValue);
 
-            _map = ConvertToMap(mapArray);
-//            _map = new[,]
-//            {
-//                {new Node(NodeType.Street, 0, 0), new Node(NodeType.Street, 1, 0),new Node(NodeType.Street, 2, 0) , new Node(NodeType.Street, 3, 0) },
-//                {new Node(NodeType.Street, 0, 1), new Node(NodeType.Street, 1, 1),new Node(NodeType.Wall, 2, 1) , new Node(NodeType.Street, 3, 1) },
-//                {new Node(NodeType.Street, 0, 2), new Node(NodeType.Street, 1, 2),new Node(NodeType.Wall, 2, 2) , new Node(NodeType.Street, 3, 2) },
-//                {new Node(NodeType.Street, 0, 3), new Node(NodeType.Street, 1, 3),new Node(NodeType.Wall, 2, 3) , new Node(NodeType.Street, 3, 3) },
-//                {new Node(NodeType.Street, 0, 4), new Node(NodeType.Street, 1, 4),new Node(NodeType.Wall, 2, 4) , new Node(NodeType.Street, 3, 4) },
-//                {new Node(NodeType.Street, 0, 5), new Node(NodeType.Street, 1, 5),new Node(NodeType.Street, 2, 5) , new Node(NodeType.Street, 3, 5) }
-//            };
+            _map = ConvertToMap(map);
 
-            if (!InBounds(start))
-                throw new Exception($"Starting point ({start.X}, {start.Y}) was outside the bounds of the map.");
+            if (Start == new Point(int.MaxValue, int.MaxValue))
+                throw new Exception($"Starting point does not exists");
 
-            if (!InBounds(end))
-                throw new Exception($"Ending point ({end.X}, {end.Y}) was outside the bounds of the map.");
-
-            if (!IsPassable(start))
-                throw new Exception($"Starting point ({start.X}, {start.Y}) can't be set on impassable node ({GetNode(start.X, start.Y).Type.ToString()}).");
-
-            if (!IsPassable(end))
-                throw new Exception($"Ending point ({end.X}, {end.Y}) can't be impassable node ({GetNode(end.Y, end.X).Type.ToString()}).");
+            if (End == new Point(int.MaxValue, int.MaxValue))
+                throw new Exception($"Ending point does not exists");
             
-            Start = start;
-            GetNode(start).IsOpen = false;
-            End = end;
+            if (!InBounds(Start))
+                throw new Exception($"Starting point ({Start.X}, {Start.Y}) was outside the bounds of the map.");
+
+            if (!InBounds(End))
+                throw new Exception($"Ending point ({End.X}, {End.Y}) was outside the bounds of the map.");
+
+            if (!IsPassable(Start))
+                throw new Exception($"Starting point ({Start.X}, {Start.Y}) can't be set on impassable node ({GetNode(Start.X, Start.Y).Type.ToString()}).");
+
+            if (!IsPassable(End))
+                throw new Exception($"Ending point ({End.X}, {End.Y}) can't be impassable node ({GetNode(End.Y, End.X).Type.ToString()}).");
+
+            GetStartNode().IsOpen = false;
 
             foreach (var node in _map)
             {
                 node.SetHeuristic(GetEndNode());
             }
         }
+
 
         public Node GetEndNode()
         {
@@ -140,7 +138,7 @@ namespace NAIAStar
             return list;
         }
 
-        static IEnumerable<Node> ConvertToMap(string[] array)
+        private IEnumerable<Node> ConvertToMap(string[] array)
         {
             var height = array.Length;
             var width = array[0].Length;
@@ -150,8 +148,15 @@ namespace NAIAStar
             {
                 for (int x = 0; x < width; x++)
                 {
-                    var type = array[y][x].CharToType();
-                    list.Add(new Node(type, x, y));
+                    var type = array[y][x];
+
+                    if (char.ToUpper(type) == 'S')
+                        Start = new Point(x, y);
+
+                    if (char.ToUpper(type) == 'E')
+                        End = new Point(x, y);
+
+                    list.Add(new Node(type.CharToType(), x, y));
                 }
             }
 
@@ -162,14 +167,9 @@ namespace NAIAStar
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append('+');
-            sb.Append('-', Width);
-            sb.Append('+');
-            sb.AppendLine();
 
             for (int i = 0; i < Height; i++)
             {
-                sb.Append('|');
                 for (int j = 0; j < Width; j++)
                 {
                     if (IsStart(j, i) || IsEnd(j, i))
@@ -182,13 +182,8 @@ namespace NAIAStar
                     }
                 }
 
-                sb.Append('|');
                 sb.AppendLine();
             }
-
-            sb.Append('+');
-            sb.Append('-', Width);
-            sb.Append("+");
 
             return sb.ToString();
         }
