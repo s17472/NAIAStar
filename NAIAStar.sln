@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28822.285
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAI-AStar", "NAI-AStar.csproj", "{1E4153AD-52E2-4293-A6C7-790A97C69CBA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAIAStar", "NAIAStar.csproj", "{1E4153AD-52E2-4293-A6C7-790A97C69CBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
