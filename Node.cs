@@ -42,29 +42,39 @@ namespace NAI_AStar
             }
         }
 
-        public NodeType Type { get; set; }
-        public double G { get; private set; }
-        public double H { get; set; }
-        public double F => G + H;
-        public int X { get; set; }
-        public int Y { get; set; }
+        public NodeType Type { get; private set; }
+        public int G { get; private set; }
+        public int H { get; private set; }
+        public int F => G + H;
+        public int X { get; }
+        public int Y { get; }
+        public bool IsOpen { get; set; } = true;
+        public bool IsPassable => Type != NodeType.Wall;
 
-        public Node(Node? parentNode, NodeType type, double g, double h, int x, int y)
+
+        public Node(Node parentNode, NodeType type, int x, int y)
         {
             _parentNode = parentNode;
             Type = type;
-            G = g;
-            H = h;
+            G = (int)type;
             X = x;
             Y = y;
         }
 
-        public Node(NodeType type) : this(null, type, 0, 0, 0, 0)
+        public Node(NodeType type, int x, int y) : this(null, type, x, y) {}
+
+        public Node(NodeType type) : this(null, type, 0, 0) {}
+
+        public void SetHeuristic(Node endNode)
         {
-            Type = type;
+            var D = 1;
+            var dx = Math.Abs(X - endNode.X);
+            var dy = Math.Abs(Y - endNode.Y);
+            H = D * (dx + dy);
         }
 
-        public static double GetTravelCost(Node startNode, Node endNode)
+
+        public static int GetTravelCost(Node startNode, Node endNode)
         {
             var D = 1;
             var dx = Math.Abs(startNode.X - endNode.X);

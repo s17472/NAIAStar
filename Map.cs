@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 
 namespace NAI_AStar
@@ -11,9 +13,11 @@ namespace NAI_AStar
         public int Height => _map.GetLength(0);
         public int Width => _map.GetLength(1);
         private readonly Node[,] _map;
+        public IEnumerable<Node> MapGrid;
+
 
         public Map(Point start, Point end)
-        { 
+        {
             _map = new[,]
             {
                 {new Node(NodeType.Street), new Node(NodeType.Street),new Node(NodeType.Grass) , new Node(NodeType.Street) },
@@ -46,9 +50,75 @@ namespace NAI_AStar
         }
 
 
-        public Map() : this(new Point(), new Point())
+        private bool InBounds(Point point)
         {
+            return point.X < Width && point.X >= 0 && point.Y < Height && point.Y >= 0;
+        }
 
+        private bool IsStart(int x, int y)
+        {
+            return Start.X == x && Start.Y == y;
+        }
+
+        private bool IsEnd(int x, int y)
+        {
+            return End.X == x && End.Y == y;
+        }
+        private bool IsPassable(Point point)
+        {
+            return _map[point.Y, point.X].Type <= 0;
+        }
+
+        private IEnumerable<Point> GetNeighborPoints(int x, int y)
+        {
+            return new[]
+            {
+                new Point(x+1, y  ),
+                new Point(x,   y-1),
+                new Point(x-1, y  ),
+                new Point(x,   y+1)
+            };
+        }
+
+        private IEnumerable<Point> GetNeighborPoints(Point location)
+        {
+            return GetNeighborPoints(location.X, location.Y);
+        }
+
+        private IEnumerable<Point> GetNeighborPoints(Node node)
+        {
+            return GetNeighborPoints(node.X, node.Y);
+        }
+
+        public Node GetNode(Point location)
+        {
+            return GetNode(location.X, location.Y);
+        }
+
+        public Node GetNode(int x, int y)
+        {
+            return _map[y, x];
+        }
+
+        public void GetNeighbors(Node node)
+        {
+            var neighbors = GetNeighborPoints(node);
+
+            foreach (var neighbor in neighbors)
+            {
+                if (!InBounds(neighbor))
+                {
+                    continue;
+                }
+
+                var neighborNode = GetNode(neighbor);
+                if (!neighborNode.IsPassable || neighborNode.IsOpen)
+                {
+                    continue;
+                }
+
+
+            }
         }
 
         public override string ToString()
@@ -81,30 +151,11 @@ namespace NAI_AStar
             sb.Append('+');
             sb.Append('-', Width);
             sb.AppendLine("+");
-            
+
             sb.AppendLine($"Starting point: {Start.X}, {Start.Y}");
             sb.AppendLine($"Ending point: {End.X}, {End.Y}");
 
             return sb.ToString();
-        }
-
-        private bool InBounds(Point point)
-        {
-            return point.X < Width && point.X >= 0 && point.Y < Height && point.Y >= 0;
-        }
-
-        private bool IsStart(int x, int y)
-        {
-            return Start.X == x && Start.Y == y;
-        }
-
-        private bool IsEnd(int x, int y)
-        {
-            return End.X == x && End.Y == y;
-        }
-        private bool IsPassable(Point point)
-        {
-            return _map[point.Y, point.X].Type <= 0;
         }
     }
 }
